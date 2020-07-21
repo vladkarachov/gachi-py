@@ -7,8 +7,10 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import io
 import numpy
+from dotenv import load_dotenv
 
 font_size = 40  # for name tag
+load_dotenv()
 token = os.environ['TOKEN']
 
 
@@ -71,8 +73,8 @@ def get_mess(update: Updater, context):
 
 
 def select_pictures():
-    dir_bkg = 'Who\\WhoTitles'
-    dir_res = 'Who\\WhoAnswers'
+    dir_bkg = os.path.join('Who','WhoTitles')
+    dir_res = os.path.join('Who','WhoAnswers')
     bkg = Image.open(os.path.join(dir_bkg, random.choice(os.listdir(dir_bkg))))
     res = Image.open(os.path.join(dir_res, random.choice(os.listdir(dir_res))))
     return bkg, res
