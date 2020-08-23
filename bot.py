@@ -1,13 +1,15 @@
+import io
+import os
 import random
 import re
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
-                          ConversationHandler)
-from PIL import Image, ImageDraw, ImageFont
-import os
-import io
+import time
+
 import numpy
+from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
+from telegram import ChatPermissions, error
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
+                          )
 
 font_size = 40  # for name tag
 load_dotenv()
@@ -58,10 +60,31 @@ def pog(update: Updater, context):
                             sticker=sticker)
 
 
+def mute(update: Updater, context):
+    if update.effective_chat.type not in ('group', 'supergroup'):
+        update.message.reply_text("Function can be used only in group chats")
+    else:
+        duration = numpy.random.choice([0, 1, 2, 3, 4, 5],
+                                       p=[0.5, 0.1, 0.1, 0.1, 0.1, 0.1])
+        if duration:
+            permission = ChatPermissions(can_send_messages=False)
+            try:
+                context.bot.restrictChatMember(chat_id=update.effective_chat.id,
+                                               user_id=update.effective_user.id,
+                                               permissions=permission,
+                                               until_date=int(time.time()) + int(duration * 60 * 60))
+                update.message.reply_text("press F for " + str(update.effective_user.full_name)
+                                          + " [" + str(duration) + "h]")
+            except error.BadRequest:
+                update.message.reply_text("Админов нельзя рестриктить " + str(update.effective_user.full_name) + "...")
+        else:
+            update.message.reply_text("На этот раз тебе повезло " + str(update.effective_user.full_name))
+
+
 def get_mess(update: Updater, context):
     # regex handler
     # build in regex doesnt have lower
-    if update.effective_message.text==None:
+    if update.effective_message.text == None:
         return 0
     message = update.effective_message.text.lower()
     if re.search(r"(\b(пог)\b|\b(pog)\b)", message):
@@ -69,12 +92,14 @@ def get_mess(update: Updater, context):
     # тире не работает с регекспом почему-то
     if message.find('тестик-') != -1:
         who(update, context)
+    if message.find('мут-') != -1:
+        mute(update, context)
     return 0
 
 
 def select_pictures():
-    dir_bkg = os.path.join('Who','WhoTitles')
-    dir_res = os.path.join('Who','WhoAnswers')
+    dir_bkg = os.path.join('Who', 'WhoTitles')
+    dir_res = os.path.join('Who', 'WhoAnswers')
     bkg = Image.open(os.path.join(dir_bkg, random.choice(os.listdir(dir_bkg))))
     res = Image.open(os.path.join(dir_res, random.choice(os.listdir(dir_res))))
     return bkg, res
@@ -122,6 +147,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("rap", rap))
     dp.add_handler(CommandHandler("who", who))
+    dp.add_handler(CommandHandler("mute", mute))
 
     # dp.add_handler(MessageHandler(filters=Filters.regex(r"(\b([П|п]ог)\b|\b([P|p]og)\b)"), callback=pog))
 
