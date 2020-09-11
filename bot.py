@@ -11,9 +11,11 @@ from telegram import ChatPermissions, error
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           )
 
+import moonphase
+
 font_size = 40  # for name tag
 load_dotenv()
-token = os.environ['TOKEN2']
+token = os.environ['TOKEN']
 
 
 def start(update, context):
@@ -52,12 +54,16 @@ def create_image(bkg, profile_pic, res, name_tag):
 
 
 pog_users_time = dict()
-
+def get_probability_for_pog():
+    phase = moonphase.position()
+    # формула взята с потолка не ищите особого смысла
+    prob = numpy.sin(float(phase)*numpy.pi/2)/4+0.1
+    return [1-prob, prob]
 
 def pog(update: Updater, context):
     stickers = ['CAACAgIAAxkBAANmXxNz2XBHKMFWmTqR6xW2qnj_7o8AArsDAALgeVIHucUjaLiR8vMaBA',
                 "CAACAgIAAxkBAANJXxNsRjCVRDHdh2qDEk5ELDMYOaAAAvoDAALgeVIHi6_ino1KLzUaBA"]
-    sticker = numpy.random.choice(stickers, p=[0.9, 0.1])
+    sticker = numpy.random.choice(stickers, p=get_probability_for_pog())
     # cooldown func (against spam)
     last_time = pog_users_time.get(update.effective_user.id, 0)
     if last_time != 0 and \
@@ -159,7 +165,7 @@ def main():
     dp.add_handler(CommandHandler("rap", rap))
     dp.add_handler(CommandHandler("who", who))
     dp.add_handler(CommandHandler("mute", mute))
-
+    dp.add_handler(CommandHandler("stat", mute))
     # dp.add_handler(MessageHandler(filters=Filters.regex(r"(\b([П|п]ог)\b|\b([P|p]og)\b)"), callback=pog))
 
     dp.add_handler(MessageHandler(filters=Filters.all, callback=get_mess))
