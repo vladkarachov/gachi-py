@@ -11,7 +11,7 @@ from telegram import ChatPermissions, error
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           )
 
-from pog import pog
+from pog import pog, get_pog_stats
 
 font_size = 40  # for name tag
 load_dotenv()
@@ -146,7 +146,7 @@ def main():
     dp.add_handler(CommandHandler("rap", rap))
     dp.add_handler(CommandHandler("who", who))
     dp.add_handler(CommandHandler("mute", mute))
-    dp.add_handler(CommandHandler("stat", mute))
+    dp.add_handler(CommandHandler("stat", get_pog_stats))
     # dp.add_handler(MessageHandler(filters=Filters.regex(r"(\b([П|п]ог)\b|\b([P|p]og)\b)"), callback=pog))
 
     dp.add_handler(MessageHandler(filters=Filters.all, callback=get_mess))
