@@ -1,7 +1,6 @@
 import io
 import os
 import random
-import re
 import time
 
 import numpy
@@ -22,7 +21,6 @@ def start(update, context):
 
 
 def rap(update, context):
-    """Send a message when the command /start is issued."""
     update.message.reply_text('йоу сабаки!')
 
 
@@ -87,14 +85,17 @@ def get_mess(update: Updater, context):
     if update.effective_message.text == None:
         return 0
     message = update.effective_message.text.lower()
-    if re.search(r"(\b(пог)\b|\b(pog)\b)", message):
-        pog(update, context)
-    # тире не работает с регекспом почему-то
-    if message.find('тестик-') != -1:
-        who(update, context)
-    if message.find('мут-') != -1:
-        mute(update, context)
-    return 0
+    for word in message.split():
+        if word in ('пог', 'pog'):
+            pog(update, context)
+            break
+        elif word == 'тестик-':
+            who(update, context)
+            break
+        elif word == 'мут-':
+            mute(update, context)
+            break
+
 
 
 def select_pictures():
