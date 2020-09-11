@@ -1,3 +1,4 @@
+import datetime
 import io
 import os
 import random
@@ -12,7 +13,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
 
 font_size = 40  # for name tag
 load_dotenv()
-token = os.environ['TOKEN']
+token = os.environ['TOKEN2']
 
 
 def start(update, context):
@@ -50,12 +51,22 @@ def create_image(bkg, profile_pic, res, name_tag):
     return dst
 
 
+pog_users_time = dict()
+
+
 def pog(update: Updater, context):
     stickers = ['CAACAgIAAxkBAANmXxNz2XBHKMFWmTqR6xW2qnj_7o8AArsDAALgeVIHucUjaLiR8vMaBA',
                 "CAACAgIAAxkBAANJXxNsRjCVRDHdh2qDEk5ELDMYOaAAAvoDAALgeVIHi6_ino1KLzUaBA"]
     sticker = numpy.random.choice(stickers, p=[0.9, 0.1])
-    context.bot.sendSticker(update.effective_chat.id,
-                            sticker=sticker)
+    # cooldown func (against spam)
+    last_time = pog_users_time.get(update.effective_user.id, 0)
+    if last_time != 0 and \
+            last_time + datetime.timedelta(minutes=1) > update.effective_message.date:
+        update.message.reply_text('не погай')
+    else:
+        context.bot.sendSticker(update.effective_chat.id,
+                                sticker=sticker)
+        pog_users_time[update.effective_user.id] = update.effective_message.date
 
 
 def mute(update: Updater, context):
@@ -95,7 +106,6 @@ def get_mess(update: Updater, context):
         elif word == 'мут-':
             mute(update, context)
             break
-
 
 
 def select_pictures():
