@@ -1,4 +1,4 @@
 python-telegram-bot
-pillow==8.1.1
+pillow==8.2.0
 numpy
 python-dotenv
