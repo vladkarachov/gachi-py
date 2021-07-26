@@ -17,8 +17,9 @@ def get_probability_for_pog():
 
 
 def pog(update: Updater, context):
-    stickers = ['CAACAgIAAxkBAANmXxNz2XBHKMFWmTqR6xW2qnj_7o8AArsDAALgeVIHucUjaLiR8vMaBA',
-                "CAACAgIAAxkBAANJXxNsRjCVRDHdh2qDEk5ELDMYOaAAAvoDAALgeVIHi6_ino1KLzUaBA"]
+    # 2 пог классный 1 нет
+    stickers = ['CAACAgIAAxkBAAObYP7yaBmTk2dWPQy69B55jExJsV4AAhUAA-vLHAMrbDkiR1mznyAE',
+                'CAACAgIAAxkBAAOeYP7yyQUE3UeI3Xw1PnqIt-2fB3sAAhYAA-vLHAMsBUfCb3i2VSAE']
     sticker = numpy.random.choice(stickers, p=get_probability_for_pog())
     # cooldown func (against spam)
     last_time = pog_users_time.get(update.effective_user.id, 0)
